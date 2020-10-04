@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"mygithub_code/chatRoom/client/process"
 	"os"
 )
 
@@ -26,7 +27,18 @@ func main() {
 		switch key {
 		case 1:
 			fmt.Println("登录聊天室")
-			loop = false
+			fmt.Println("请输入用户的id")
+			fmt.Scanf("%d\n", &userID)
+			fmt.Println("请输入用户的密码")
+			fmt.Scanf("%s\n", &userPwd)
+
+			up := &process.UserProcess{}
+			err := up.Login(userID, userPwd)
+			if err != nil {
+				fmt.Println("up.Login(userID, userPwd) err = ", err)
+				return
+			}
+
 		case 2:
 			fmt.Println("注册用户")
 			loop = false
@@ -36,23 +48,5 @@ func main() {
 		default:
 			fmt.Println("你的输入有误，请重新输入")
 		}
-	}
-
-	//根据用户的输入，显示新的提示信息
-	if key == 1 {
-		// 说明用户要登录
-		fmt.Println("请输入用户的id")
-		fmt.Scanf("%d\n", &userID)
-		fmt.Println("请输入用户的密码")
-		fmt.Scanf("%s\n", &userPwd)
-		// 先把登录的函数，写到另外一个文件中，比如：login.go
-		err := login(userID, userPwd)
-		if err != nil {
-			fmt.Println("登录失败")
-		} else {
-			//进行下一步的逻辑
-		}
-	} else if key == 2 {
-		fmt.Println("进行用户注册的逻辑")
 	}
 }
