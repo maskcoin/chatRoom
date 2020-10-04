@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mygithub_code/chatRoom/common/message"
 	"mygithub_code/chatRoom/server/commonutils"
+	"mygithub_code/chatRoom/server/model"
 	"net"
 )
 
@@ -32,13 +33,23 @@ func (up *UserProcess) ServerProcessLogin(mes *message.Message) (err error) {
 	var loginResMes message.LoginResMes
 
 	//如果用户的ID为100，密码=123456，认为合法，否则不合法
-	if loginMes.UserID == 100 && loginMes.UserPwd == "123456" {
-		//合法
-		loginResMes.Code = 200
-	} else {
-		//不合法
+	// if loginMes.UserID == 100 && loginMes.UserPwd == "123456" {
+	// 	//合法
+	// 	loginResMes.Code = 200
+	// } else {
+	// 	//不合法
+	// 	loginResMes.Code = 500 //500表示用户不存在
+	// 	loginResMes.Error = "该用户不存在，请注册再使用"
+	// }
+
+	// 我们需要到redis数据库完成验证
+	user, err := model.MyUserDao.Login(loginMes.UserID, loginMes.UserPwd)
+	if err != nil {
 		loginResMes.Code = 500 //500表示用户不存在
 		loginResMes.Error = "该用户不存在，请注册再使用"
+	} else {
+		loginResMes.Code = 200
+		fmt.Println(user, "登录成功")
 	}
 
 	//3. 将loginResMes序列化
